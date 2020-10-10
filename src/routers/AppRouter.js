@@ -5,12 +5,13 @@ import AuthRouter from './AuthRouter';
 import { JournalScreen } from '../components/journal/JournalScreen';
 import { login } from '../actions/auth';
 import { PrivateRouter } from './PrivateRouter';
+import { PublicRouter } from './PublicRouter';
 import {
     BrowserRouter as Router,
     Switch,
     Redirect
 } from "react-router-dom";
-import { PublicRouter } from './PublicRouter';
+import {startLoadingNotes } from '../actions/notes';
 
 export const AppRouter = () => {
 
@@ -21,11 +22,13 @@ export const AppRouter = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        firebase.auth().onAuthStateChanged((user) => {
+        firebase.auth().onAuthStateChanged( async(user) => {
             
             if(user?.uid){
                 dispatch(login(user.uid, user.displayName));
                 setIsLoggedIn(true);
+                dispatch(startLoadingNotes(user.uid));
+
             }else{
                 setIsLoggedIn(false);
             }
@@ -38,7 +41,7 @@ export const AppRouter = () => {
 
     if(cheking){
         return(
-            <h1>Espere...</h1>
+            <h1>Wait...</h1>
         )
     }
 
